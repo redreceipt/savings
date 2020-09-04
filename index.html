@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Investment Calculator</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-1">
+          Investment Calculator
+        </h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Starting Amount</label>
+          </div>
+          <div class="field-body">
+            <div class="field is-narrow has-addons">
+              <p class="control">
+                <a class="button is-static">
+                  $
+                </a>
+              </p>
+              <input id="start" class="input" type="text" value="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Time</label>
+          </div>
+          <div class="field-body">
+            <div class="field is-narrow has-addons">
+              <input id="time" class="input" type="text" value="10" />
+              <p class="control">
+                <a class="button is-static">
+                  Years
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Interest Rate</label>
+          </div>
+          <div class="field-body">
+            <div class="field is-narrow has-addons">
+              <input id="rate" class="input" type="text" value="8" />
+              <p class="control">
+                <a class="button is-static">
+                  %
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Goal</label>
+          </div>
+          <div class="field-body">
+            <div class="field is-narrow has-addons">
+              <p class="control">
+                <a class="button is-static">
+                  $
+                </a>
+              </p>
+              <input id="goal" class="input" type="text" value="10000" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="subtitle is-2">
+          You need to contribute
+          <strong> $<span id="contribution">X</span></strong> per month
+        </h2>
+      </div>
+    </section>
+
+    <!-- credit this site here in the footer -->
+    <!--https://www.thecalculatorsite.com/articles/finance/compound-interest-formula.php-->
+
+    <script>
+      const startInput = document.querySelector("#start");
+      const timeInput = document.querySelector("#time");
+      const rateInput = document.querySelector("#rate");
+      const goalInput = document.querySelector("#goal");
+
+      const calculateContribution = (e) => {
+        const start = startInput.value;
+        const time = timeInput.value;
+        const rate = rateInput.value;
+        const goal = goalInput.value;
+        // no fields can be blank
+        if (!start || !time || !rate || !goal) return;
+
+        // calculate
+        // Total = [ P(1+r/n)^(nt) ] + [ PMT × p(((1 + r/n)^(nt) - 1) / (r/n)) ]
+        const interest = rate / 100;
+        const principal = start * Math.pow(1 + interest, time); // P(1+r/n)^(nt)
+        const series = (12 * (Math.pow(1 + interest, time) - 1)) / interest; // p(((1 + r/n)^(nt) - 1) / (r/n))
+        const safeSeries = series || 12 * time; // in case interest rate is 0 🤷‍♂️
+        const contribution = Math.round((goal - principal) / safeSeries);
+        // for the reverse formula, to get the future amount: principal + contribution * series
+
+        // replace value in HTML
+        const contributionText = document.querySelector("#contribution");
+        contributionText.innerHTML = contribution;
+      };
+
+      // add event handlers for inputs
+      const inputs = document.querySelectorAll(".input");
+      inputs.forEach((input) =>
+        input.addEventListener("blur", calculateContribution)
+      );
+
+      calculateContribution();
+    </script>
+  </body>
+</html>
